@@ -39,19 +39,29 @@ class Langton {
     MoveAntUntilOut() {
         let interval = parseInt($('#Interval').val())
         this.Simulation.IsRunning = true
+        let line = null
+        let thenColor = null
+        let thenDirection = null
 
         this.intervalLooping = setInterval($.proxy(function () {
             let x_position = this.Ant.X
             let y_position = this.Ant.Y
             let colorCase = this.Grid.GetColor(x_position, y_position)
+            let colorProposed = []
+            $('tbody').find('tr').each(function () {
+                colorProposed.push($(this).attr('data-if-color'));
+            });
 
-            if (colorCase === "#FFFFFF") {
-                this.Ant.Turn("right")
-                this.Grid.SetColor(x_position, y_position, "#000000")
-            }
-            if (colorCase === "#000000") {
-                this.Ant.Turn("left")
-                this.Grid.SetColor(x_position, y_position, "#FFFFFF")
+            for(var item in colorProposed){
+
+                if(colorCase === colorProposed[item]){
+                     line = $("tr[data-if-color='"+colorCase+"']")
+                     thenColor = $(line).find('.then-color').find(':selected').attr('value')
+                     thenDirection = $(line).find('.then-direction').find(':selected').attr('value')
+                    
+                     this.Ant.Turn(thenDirection)
+                     this.Grid.SetColor(x_position, y_position, thenColor)
+                }
             }
         }, this), interval)
     }
@@ -106,7 +116,7 @@ class Langton {
             }
             $('#CurrentPattern').append(newHTML)
         }
-        
+
         if (condition === 'Serpent') {
             for (let i = 0; i < this.Pattern.datas['patterns'][4].steps.length; i++) {
                 newHTML += Pattern.GetHtmlRow(this.Pattern.datas['patterns'][4].steps[i])

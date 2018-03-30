@@ -76,6 +76,6 @@ class Grid {
             return null
         }
 
-        return this.Colors[x - 1][y - 1]
+            return this.Colors[x - 1][y - 1]
     }
 }
