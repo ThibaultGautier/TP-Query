@@ -25,7 +25,7 @@ class Langton {
         $('#MoveForward').on('click', $.proxy(this.Simulation.MoveAnt, this))
         $('#Start').on('click', $.proxy(this.Move, this))
         $('#Pattern').on('change', $.proxy(this.onchangePatternCondition, this))
-
+        $("#CurrentPattern").on('change', '.then-color select', $.proxy(this.onColorChange, this))        
 
         console.log("Langton.onReady")
     }
@@ -85,7 +85,7 @@ class Langton {
     onchangePatternCondition() {
         let condition = $('#Pattern').val()
         let newHTML = null
-
+        
         //Clean le tableau
         $('#CurrentPattern').find("tr:gt(1)").remove();
 
@@ -94,6 +94,7 @@ class Langton {
                 newHTML += Pattern.GetHtmlRow(this.Pattern.datas['patterns'][0].steps[i])
             }
             $('#CurrentPattern').append(newHTML)
+            
         }
 
         if (condition === 'Tout droit') {
@@ -122,6 +123,37 @@ class Langton {
                 newHTML += Pattern.GetHtmlRow(this.Pattern.datas['patterns'][4].steps[i])
             }
             $('#CurrentPattern').append(newHTML)
+        }
+        if (this.Simulation.IsRunning === "true") {
+            this.Grid.Size = this.Simulation.Size
+            this.Ant.Reset(this.Grid.MiddleX, this.Grid.MiddleY)
+            clearInterval(this.intervalLooping)
+            this.Simulation.IsRunning = false
+        }
+        
+    }
+
+    onColorChange(e) {
+
+        var line = $(e.currentTarget).parents('tr')
+        var prevLines = $(e.currentTarget).parents('tr').prevAll()
+        var newColor = $(e.currentTarget).find(':selected').val()
+        var colorTab = []
+        prevLines.each(function() {
+            colorTab.push($(this).find('.then-color select').find(':selected').attr('value'))
+        })
+
+        line.nextAll().remove()
+
+        if (colorTab.includes(newColor)) {
+            alert('Cette couleur a deja ete utilisee')
+            $(e.currentTarget).val('#FFFFFF').change()
+        }
+        else if (newColor !== "#FFFFFF"){
+            let htmlRow = Pattern.GetHtmlRow({
+                if: newColor
+            })
+            $('tbody').append(htmlRow)
         }
     }
 }

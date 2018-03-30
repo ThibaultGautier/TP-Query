@@ -28,6 +28,8 @@ class Pattern {
             }
         })
     }
+
+
     static GetSelect(json, selected) {
         let html = '<select>'
 
